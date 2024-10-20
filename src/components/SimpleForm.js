@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Formik,
   Form,
@@ -11,11 +11,25 @@ import * as Yup from "yup";
 import { TextError } from "./TextError";
 
 const initialValues = {
-  name: "",
-  email: "",
-  channel: "",
-  comments: "",
-  address: "",
+  name: "ayaz",
+  email: "abc@gmail.com",
+  channel: "ayazdev",
+  comments: "Welcome to ayazdev",
+  address: "alkabir town, lahore, PK",
+  social: {
+    facebook: "",
+    twitter: "",
+  },
+  phoneNumbers: ["", ""],
+  phNumbers: [""],
+};
+
+const savedValues = {
+  name: "ayaz",
+  email: "abc@gmail.com",
+  channel: "ayazdev",
+  comments: "Welcome to ayazdev",
+  address: "alkabir town, lahore, PK",
   social: {
     facebook: "",
     twitter: "",
@@ -38,14 +52,27 @@ const validateComments = (value) => {
   return error;
 };
 
+const onsubmit = (values, onSubmitProps) => {
+  console.log("Form Data:", values);
+  console.log("Submit Props:", onSubmitProps);
+  onSubmitProps.setSubmitting(false);
+  onSubmitProps.resetForm();
+};
+
+// `formik.isDirty` will set to false initially and will be true if you will change any of te field state
+
 const SimpleForm = () => {
+  const [formValues, setFormValues] = useState(null);
   return (
     <Formik
-      initialValues={initialValues}
+      initialValues={formValues || initialValues}
       validationSchema={validationSchema}
       onSubmit={onsubmit}
+      enableReinitialize
       // validateOnChange={false}
       // validateOnBlur={false}
+      // validateOnMount
+      // `validateOnMount` works fine for small forms as it will run all the validations on component mount
     >
       {(formik) => {
         console.log("formik props:", formik);
@@ -167,7 +194,24 @@ const SimpleForm = () => {
             >
               Visit fields
             </button>
-            <button type="submit">Submit</button>
+            {/* <button disabled={!formik.isValid} type="submit">
+              Submit
+            </button> */}
+            <button
+              onClick={() => {
+                setFormValues(savedValues);
+              }}
+              type="button"
+            >
+              Load Saved Values
+            </button>
+            <button type="reset">Reset</button>
+            <button
+              disabled={!formik.isValid || formik.isSubmitting}
+              type="submit"
+            >
+              Submit
+            </button>
           </Form>
         );
       }}
